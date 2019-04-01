@@ -17,6 +17,7 @@ class FeedsConsumerService
   }
 
   def self.call
+    results = { created: 0, updated: 0 }
     URLS.each do |category, url|
       open(url) do |rss|
         SimpleRSS.
@@ -36,14 +37,17 @@ class FeedsConsumerService
                 link: item.link
               }
               if feed
+                results[:updated] += 1
                 feed.update(attribs)
               else
+                results[:created] += 1
                 Feed.create(attribs)
               end
             end
           end
       end
     end
+    results
   end
 
 end
